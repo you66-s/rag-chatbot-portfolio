@@ -219,3 +219,4 @@ __marimo__/
 # Local files
 .vscode
 app/storage
+app/*.ipynb

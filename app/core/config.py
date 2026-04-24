@@ -9,6 +9,11 @@ class Settings(BaseSettings):
     FILE_MAX_SIZE: int
     FILE_DEFAULT_CHUNK_SIZE: int
 
+    GEMINI_MODEL_API_KEY: str
+    GENERATION_MODEL_ID: str
+    EMBEDDING_MODEL_ID: str
+    EMBEDDING_OUTPUT_VECTOR_SIZE: int
+    
     class Config:
         env_file = ".env"
 
