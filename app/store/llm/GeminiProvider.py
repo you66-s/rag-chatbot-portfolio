@@ -62,4 +62,4 @@ class GeminiProvider():
             return embedding
         except Exception as e:
             self.logger.error(f"Text embedding error: {type(e).__name__} - {str(e)}")
-            return None, LLMProcessingResponses.LLM_TEXT_EMBEDDING_FAIL.value
+            return None
