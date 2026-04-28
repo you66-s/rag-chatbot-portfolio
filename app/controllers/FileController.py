@@ -44,7 +44,7 @@ class FileController:
             }
             
             
-    def file_content_loading(self, file_id: str) -> List[Document]:
+    def file_content_loading(self, file_id: str):
         """
         This function load the file content only and clean it us langchain and PyMuPDFLoader if needed
         Returns list of Documents

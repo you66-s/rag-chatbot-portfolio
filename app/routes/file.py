@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, status
+from fastapi import APIRouter, Request, UploadFile, File, HTTPException, status
 from fastapi.responses import JSONResponse
 from controllers.FileController import FileController
 from schemas.response.fileSchema import FileUploadResponse
@@ -20,19 +20,3 @@ async def upload_file(file: UploadFile = File(...)):
             detail=response
         )
     return response
-
-@file_route.get("/extract-documents")
-async def extract_and_chunk_documents(file_id: str):
-    documents, message = file_controller.file_content_loading(file_id=file_id)
-    if documents is None:
-        raise HTTPException(
-            status_code=status.HTTP_204_NO_CONTENT,
-            detail=message
-        )
-    chunks, message = file_controller.chunk_documents(documents=documents)
-    if chunks is None:
-        raise HTTPException(
-            status_code=status.HTTP_204_NO_CONTENT,
-            detail=message
-        )
-    return chunks
