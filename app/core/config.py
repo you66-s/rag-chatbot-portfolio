@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL_ID: str
     EMBEDDING_OUTPUT_VECTOR_SIZE: int
     
+    COLLECTION_NAME: str
+    
     class Config:
         env_file = ".env"
 
