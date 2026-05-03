@@ -1,13 +1,15 @@
 from typing import List
-from schemas.request.CollectionSchema import CreateCollectionSchema
 from langchain_core.documents import Document
 from qdrant_client.models import PointStruct
 from enums.LLMEnums import EmbeddingParameters
+from store.llm.PromptBuilder import PromptBuilder
+import logging
 
 class NLPController:
     def __init__(self, vectord_db, llm):
         self.vectord_db = vectord_db
         self.llm = llm
+        self.logger = logging.getLogger(__name__)
     
     def get_collection_info(self, collection_name: str):
         collection_info = self.vectord_db.get_collection_info(collection_name=collection_name)
@@ -33,14 +35,36 @@ class NLPController:
         search_result, search_msg = self.vectord_db.search(vector=vector, collection_name=collection_name)
         return search_result, search_msg
     
-    def prepare_rag_answer(self, query: str, collection_name: str):
+    def prepare_prompt(self, query: str, collection_name: str) -> str:
+        """
+        This function builds full prompt and prepare it for using by llm
+        """
+        
         retrieved_documents, retrieve_msg = self.retrieve_similaire_documents(query=query, collection_name=collection_name)
         if retrieved_documents is None or len(retrieved_documents) == 0:
             return None, retrieve_msg
-        system_prompt = """
+        try:
+            prompt = PromptBuilder(documents=retrieved_documents, query=query).build_prompt()
+            print("1- NLPController: Prompt builded...")
+            return prompt, None
+        except Exception as e:
+            self.logger.error(f"Prompt Builder Error: {type(e).__name__} - {str(e)}")
+            return None, "Error while building the prompt"
+
         
+    def clear_chat_history(self):
+        self.llm.clear_chat_session()
         
-        
-        """
-        
-        
+    def list_chat_history(self):
+        print("4- NLPController: Listing chat history...")
+        history, msg = self.llm.list_chat_history()
+        if history is None:
+            return None, msg
+        formatted_history = [
+            {
+                "role": message.role,
+                "text": message.parts[0].text
+            }
+            for message in history
+        ]
+        return formatted_history, None
