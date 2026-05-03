@@ -220,3 +220,4 @@ __marimo__/
 .vscode
 app/storage
 app/*.ipynb
+app/test.py
