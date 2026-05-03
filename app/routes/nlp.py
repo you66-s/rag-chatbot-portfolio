@@ -3,12 +3,12 @@ from fastapi.responses import JSONResponse
 from controllers.NLPController import NLPController
 from controllers.FileController import FileController
 
-nlp_route = APIRouter(prefix="/api/v1/nlp", tags=["NLP"])
 
+nlp_route = APIRouter(prefix="/api/v1/nlp", tags=["NLP"])
 # TODO: use dependancy injection instead of request
 
 @nlp_route.post("/index/upload/{file_id}")
-async def index_file(request: Request, file_id: str, collection_name: str, file_section: str, file_description: str):
+async def index_file(request: Request, file_id: str, collection_name: str, project_title: str, file_section: str, file_description: str):
     """
     File section is the resume section's informations holded by this file (skills, education.....)
     """
@@ -31,6 +31,7 @@ async def index_file(request: Request, file_id: str, collection_name: str, file_
     for idx, chunk in enumerate(chunks):
         
         payload = {
+            "title": project_title,
             "text": chunk.page_content,
             "source": chunk.metadata["source"],
             "section": file_section,
@@ -48,13 +49,32 @@ async def index_file(request: Request, file_id: str, collection_name: str, file_
             "message": message
         }
     )
-@nlp_route.get("/search")
-async def search_query(request: Request, query: str, collection_name: str):
+
+@nlp_route.get("/chat")
+async def answer_user_question(request: Request, query: str, collection_name: str):
     nlp_controller = NLPController(vectord_db=request.app.state.vector_db, llm=request.app.state.llm)
-    search_result, search_msg = nlp_controller.retrieve_response(query=query, collection_name=collection_name)
-    if search_result is None:
+    prompt, prmpt_msg = nlp_controller.prepare_prompt(query=query, collection_name=collection_name)
+    if prompt is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=search_msg
+            detail=prmpt_msg
         )
-    return search_result
+    response, llm_msg = request.app.state.llm.generate_response(prompt=prompt)
+    if response is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=llm_msg
+        )
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=response
+    )
+    
+@nlp_route.post("/chat/history/clear")
+async def clear_chat_history(request: Request):
+    nlp_controller = NLPController(vectord_db=request.app.state.vector_db, llm=request.app.state.llm)
+    nlp_controller.clear_chat_history()
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content="History is clear"
+    )
