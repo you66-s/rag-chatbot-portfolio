@@ -221,3 +221,5 @@ __marimo__/
 app/storage
 app/*.ipynb
 app/test.py
+app/alembic.ini
+app/alembic/README

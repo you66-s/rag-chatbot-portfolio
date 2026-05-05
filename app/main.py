@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # RAG COMPONENTS
     app.state.llm = GeminiProvider()
     app.state.vector_db = QdrantProvider()
     logger.info("RAG components started...")
