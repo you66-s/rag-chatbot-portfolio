@@ -219,7 +219,6 @@ __marimo__/
 # Local files
 .vscode
 app/storage
-app/*.ipynb
 app/test.py
-app/alembic.ini
+
 app/alembic/README
