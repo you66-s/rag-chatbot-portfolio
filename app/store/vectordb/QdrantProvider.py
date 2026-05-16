@@ -7,7 +7,7 @@ from enums.LLMEnums import VectorDBResponses
 from schemas.response.RetrievedDocuments import RetrievedDocumentsResponse
 class QdrantProvider:
     def __init__(self):
-        self.client = QdrantClient(url="http://localhost:6333")
+        self.client = QdrantClient(host="qdrant", port=6333)
         self.distance = Distance.COSINE
         self.logger = logging.getLogger(__name__)
         
