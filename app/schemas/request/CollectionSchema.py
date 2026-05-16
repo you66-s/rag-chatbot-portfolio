@@ -8,4 +8,3 @@ class CreateCollectionSchema(BaseModel):
     
     name: str
     embedding_size: int
-    payload: dict
