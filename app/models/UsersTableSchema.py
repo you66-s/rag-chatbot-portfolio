@@ -1,5 +1,6 @@
 from db.base import Base
 from sqlalchemy import Column, String, Integer, DateTime, Text, func
+from sqlalchemy.orm import relationship
 
 class UsersTable(Base):
     __tablename__ = "users"
@@ -8,3 +9,5 @@ class UsersTable(Base):
     password = Column(Text, unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=func.now(), onupdate=func.now(), nullable=False)
+
+    files = relationship("FilesTable", back_populates="user")
