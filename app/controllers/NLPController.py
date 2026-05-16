@@ -3,6 +3,7 @@ from langchain_core.documents import Document
 from qdrant_client.models import PointStruct
 from enums.LLMEnums import EmbeddingParameters
 from store.llm.PromptBuilder import PromptBuilder
+from schemas.request.CollectionSchema import CreateCollectionSchema
 import logging
 
 class NLPController:
@@ -14,7 +15,10 @@ class NLPController:
     def get_collection_info(self, collection_name: str):
         collection_info = self.vectord_db.get_collection_info(collection_name=collection_name)
         return collection_info
-    
+    def create_collection(self, collection: CreateCollectionSchema):
+        is_created, msg = self.vectord_db.create_collection(collection=collection)
+        return is_created, msg
+        
     def index_chunk(self, collection_name: str, id: int, chunk: Document, payload: dict):
         point = PointStruct(
             id=id,

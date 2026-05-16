@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, HTTPException, status
 from fastapi.responses import JSONResponse
+from schemas.request.CollectionSchema import CreateCollectionSchema
 from controllers.NLPController import NLPController
 from controllers.FileController import FileController
 
@@ -48,6 +49,20 @@ async def index_file(request: Request, file_id: str, collection_name: str, proje
         content={
             "message": message
         }
+    )
+
+@nlp_route.post("/collection/create")
+async def create_collection(request: Request, collection: CreateCollectionSchema):
+    nlp_controller = NLPController(vectord_db=request.app.state.vector_db, llm=request.app.state.llm)
+    is_created, msg = nlp_controller.create_collection(collection=collection)
+    if not is_created:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=msg
+        )
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=msg
     )
 
 @nlp_route.get("/chat")
